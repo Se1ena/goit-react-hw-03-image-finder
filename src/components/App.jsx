@@ -12,10 +12,10 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends Component {
   state = {
-    search: '',
-    galleryItems: [],
-    modalImg: '',
     page: 1,
+    search: '',
+    modalImg: '',
+    galleryItems: [],
     status: 'start',
   };
 
@@ -41,6 +41,7 @@ export class App extends Component {
             ...this.getGalleryItems(res.data.hits),
           ],
           status: 'loaded',
+          objectCount: res.data.total,
         }));
       }
     } catch (error) {
@@ -87,7 +88,7 @@ export class App extends Component {
   }
 
   render() {
-    const { status, modalImg, galleryItems } = this.state;
+    const { status, modalImg, galleryItems, objectCount } = this.state;
 
     return (
       <Wrapper>
@@ -99,7 +100,13 @@ export class App extends Component {
           />
         )}
         {status === 'loading' && <Loader />}
-        {status === 'loaded' && <Button loadMore={this.loadMore} />}
+
+        {status === 'loaded' &&
+          (galleryItems.length < objectCount ? (
+            <Button loadMore={this.loadMore} />
+          ) : (
+            <span>Nothing to load</span>
+          ))}
         {modalImg && <Modal image={modalImg} onModalClose={this.handleModal} />}
         <ToastContainer />
       </Wrapper>
